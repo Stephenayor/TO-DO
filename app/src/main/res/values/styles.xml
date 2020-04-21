@@ -7,5 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="Theme.App.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">#0000cb</item>
+        <item name="colorControlActivated">#0000cb</item>
+        <item name="colorControlHighlight">#0000cb</item>
+    </style>
 
 </resources>
