@@ -68,6 +68,7 @@ public class AddTaskActivity extends AppCompatActivity {
                 if (mTaskId == DEFAULT_TASK_ID) {
 
                     // populate the UI
+
                 }
             }
         }
@@ -139,7 +140,7 @@ public void onSaveButtonClicked() {
     String title = mTitle.getText().toString();
 
 
-    // COMPLETED (8) Create taskEntry variable using the variables defined above
+    //Create taskEntry variable using the variables defined above
 
     TaskEntry taskEntry = new TaskEntry(title, description);
 
