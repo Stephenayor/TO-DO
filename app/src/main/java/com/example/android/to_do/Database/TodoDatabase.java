@@ -32,12 +32,7 @@ public abstract class TodoDatabase extends RoomDatabase {
                         TodoDatabase.class, TodoDatabase.DATABASE_NAME)
 
                         // Queries should be done in a separate thread to avoid locking the UI
-
-
-                        .allowMainThreadQueries()
-
                         .build();
-
             }
 
         }

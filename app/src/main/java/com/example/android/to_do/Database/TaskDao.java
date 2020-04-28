@@ -1,6 +1,7 @@
 package com.example.android.to_do.Database;
 
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -14,20 +15,20 @@ import java.util.List;
 public interface TaskDao {
 
     @Query("SELECT * FROM task ")
-    List<TaskEntry> loadAllTasks();
-
+    LiveData<List<TaskEntry>> loadAllTasks();
 
     @Insert
-
     void insertTask(TaskEntry taskEntry);
 
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-
     void updateTask(TaskEntry taskEntry);
 
 
     @Delete
-
     void deleteTask(TaskEntry taskEntry);
+
+    @Query("SELECT * FROM task where id = :id")
+    TaskEntry loadTaskById(int id);
+
 }
