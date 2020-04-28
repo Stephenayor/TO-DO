@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         TodoExecutors.getInstance().diskIO().execute(new Runnable() {
                             @Override
                             public void run() {
-                                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
+                                final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
                                 // We will be able to simplify this once we learn more
                                 // about Android Architecture Components
                                 runOnUiThread(new Runnable() {
