@@ -8,8 +8,9 @@
     tools:context="com.example.android.to_do.MainActivity">
 
 <LinearLayout
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         //Textview that displays the title

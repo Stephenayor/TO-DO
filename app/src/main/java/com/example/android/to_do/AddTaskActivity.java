@@ -1,6 +1,10 @@
 package com.example.android.to_do;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.Database;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -66,8 +70,23 @@ public class AddTaskActivity extends AppCompatActivity {
                         if (mTaskId == DEFAULT_TASK_ID) {
                             mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
 
+                            // Declare a AddTaskViewModelFactory using mDb and mTaskId
+                            AddTaskViewModelFactory factory = new AddTaskViewModelFactory(mDb, mTaskId);
+                            // Declare a AddTaskViewModel variable and initialize it by calling ViewModelProviders.of
+                            // for that use the factory created above AddTaskViewModel
+                            final AddTaskViewModel viewModel
+                                    = ViewModelProviders.of(this, factory).get(AddTaskViewModel.class);
 
-                            // populate the UI
+                            // Observe the LiveData object in the ViewModel. Use it also when removing the observer
+                            viewModel.getTask().observe(this, new Observer<TaskEntry>() {
+                                @Override
+                                public void onChanged(@Nullable TaskEntry taskEntry) {
+                                    viewModel.getTask().removeObserver(this);
+                                    populateUI(taskEntry);
+                                }
+                            });
+
+
 
                         }
                     }
@@ -119,6 +138,12 @@ public class AddTaskActivity extends AppCompatActivity {
              */
 
             private void populateUI(TaskEntry task) {
+                if (task == null) {
+                    return;
+                }
+
+                mEditText.setText(task.getDescription());
+                mTitle.setText(task.getTitle());
 
             }
         /**
@@ -132,12 +157,18 @@ public class AddTaskActivity extends AppCompatActivity {
             String description = mEditText.getText().toString();
             String title = mTitle.getText().toString();
 
-            final TaskEntry taskEntry = new TaskEntry(title,description);
+            final TaskEntry task = new TaskEntry(title, description);
             TodoExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
-                    mDb.taskDao().insertTask(taskEntry);
+                    if (mTaskId == DEFAULT_TASK_ID) {
+                        // insert new task
+                        mDb.taskDao().insertTask(task);
+                    } else {
+                        //update task
+                        task.setId(mTaskId);
+                        mDb.taskDao().updateTask(task);
+                    }
                     finish();
-
-                 }
+                }
             });}}

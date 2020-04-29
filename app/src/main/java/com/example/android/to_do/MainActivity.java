@@ -1,8 +1,13 @@
 package com.example.android.to_do;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +15,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 
 import com.example.android.to_do.Database.TaskEntry;
@@ -62,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             // Called when a user swipes left or right on a ViewHolder
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
-
                 // Get the diskIO Executor from the instance of TodoExecutors and
                 // call the diskIO execute method with a new Runnable and implement its run method
                 TodoExecutors.getInstance().diskIO().execute(new Runnable() {
@@ -73,20 +78,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         List<TaskEntry> tasks = mAdapter.getTasks();
                         // Call deleteTask in the taskDao with the task at that position
                         mDb.taskDao().deleteTask(tasks.get(position));
-                        TodoExecutors.getInstance().diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
-                                // We will be able to simplify this once we learn more
-                                // about Android Architecture Components
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mAdapter.setTasks(tasks);
-                                    }
-                                });
-                            }
-                        });
                     }
                 });
             }
@@ -106,30 +97,22 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
         });
         mDb = TodoDatabase.getInstance(getApplicationContext());
+        setupViewModel();
     }
 
-    /**
-     * This method is called after this activity has been paused or restarted.
-     * Often, this is after new data has been inserted through an AddTaskActivity,
-     * so this re-queries the database data for any changes.
-     */
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        retrieveTasks();
-    }
+    private void setupViewModel() {
+        //  Declaring and initializing viewmodel by calling it ViewModelProviders.of
+        TodoViewModel viewModel = ViewModelProviders.of(this).get(TodoViewModel.class);
+        // Observe the Livedata object in the viewmodel
+        viewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<TaskEntry> taskEntries) {
 
-    private void retrieveTasks() {
-                final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
-                // We will be able to simplify this once we learn more
-                // about Android Architecture Components
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(taskEntries);
-                    }
-                });
+                mAdapter.setTasks(taskEntries);
             }
+        });
+    }
 
 
 
