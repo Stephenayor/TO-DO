@@ -29,10 +29,10 @@ import static android.widget.LinearLayout.VERTICAL;
 public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener {
 
 
-        private TaskAdapter mAdapter;
-        private RecyclerView mRecyclerView;
-        //Member variable for the database
-        private TodoDatabase mDb;
+    private TaskAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    //Member variable for the database
+    private TodoDatabase mDb;
 
 
     @Override
@@ -40,11 +40,13 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         // Set the Recyclerview to its corresponding view
         mRecyclerView = findViewById(R.id.rv_Tasks);
 
+
         //Set the layout for the recyclerview to be a linearlayout
-        mRecyclerView .setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         //Initialize the adapter and attach it to the recycler view
         mAdapter = new TaskAdapter(this, this);
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private void setupViewModel() {
         //  Declaring and initializing viewmodel by calling it ViewModelProviders.of
         TodoViewModel viewModel = ViewModelProviders.of(this).get(TodoViewModel.class);
-        // Observe the Livedata object in the viewmodel
+        // Observe the Livedata object in the viewModel
         viewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(@Nullable List<TaskEntry> taskEntries) {
